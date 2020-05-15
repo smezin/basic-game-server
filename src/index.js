@@ -20,6 +20,19 @@ io.on('connection', (socket)=>{
        console.log('byebye')
     })
 })
+
+app.get('/', (req, res) => res.send('Hello World!!'))
+
+
+
+app.post('/postit',function(req,res){
+
+    //let data = req.body.data;
+    console.log (req.body)
+    console.log("User data = "+ data);
+    res.end(data);
+  });
+
 server.listen(port, ()=>{
     console.log(`server is up on ${port}!`)
 })
