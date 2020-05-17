@@ -1,38 +1,12 @@
-const http = require('http')
-const express = require('express')
-const socketio = require('socket.io')
+const app = require('./app');
+const http = require('http');
+//const initateSocketio = require('./socketio');
 
-app = express()
-const server = http.createServer(app)
-const io = socketio(server);
+const port = process.env.PORT || 3000;
 
-const port = process.env.PORT || 3000
+const server = http.createServer(app);
+//initateSocketio(server);
 
-io.on('connection', (socket)=>{
-    console.log('new web socket connection')
-    socket.emit('hello', 'welcome')
-
-    socket.on('hello', (msg)=>{
-        console.log(`im the server, got your "${msg}"`)
-    })
-
-    socket.on('disconnect', () => {
-       console.log('byebye')
-    })
-})
-
-app.get('/', (req, res) => res.send('Hello World!!'))
-
-
-
-app.post('/postit',function(req,res){
-
-    //let data = req.body.data;
-    console.log (req.body)
-    console.log("User data = "+ data);
-    res.end(data);
-  });
-
-server.listen(port, ()=>{
-    console.log(`server is up on ${port}!`)
-})
+server.listen(port, () => {
+    console.log("Listening on:", port);
+});
