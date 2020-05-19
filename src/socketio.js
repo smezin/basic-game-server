@@ -1,5 +1,4 @@
 const socketio = require('socket.io');
-
 const players = require('./utils/players');
 
 const initiateSocketio = (server) => {
@@ -7,18 +6,20 @@ const initiateSocketio = (server) => {
 
     io.on('connection', (socket) => {
         console.log('New WebSocket connection');
-        socket.emit('hello', 'luke, i am your server') 
+        socket.emit('hello', 'NODE JS server says connected') 
 
         socket.on('hello', (msg) => {
             console.log(msg)
         })
 
-        socket.on('enterTheSite', ({ userName, rating, id }, callback) => {
-            const player = players.addPlayer({ id: socket.id, userName, rating, userId: id });
-            callback(player);
-
-            io.emit('playersList', {
-                players: players.getPlayersNotPlayingNowList()
+        socket.on('enterAsIdlePlayer', (user) => {
+            if (!Object.keys(user).length) {
+                return console.log('empty user', user)
+            }
+            players.addPlayer(user);
+        //    console.log('got user', user)
+            io.emit('hello', {
+                players: players.getIdlePlayers()
             });
         });
 

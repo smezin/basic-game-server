@@ -1,77 +1,87 @@
-const playersNotPlayingNow = [];
-const playersPlayingNow = [];
+const idlePlayers = [];
+const busyPlayers = [];
 
-const addPlayer = ({ id, userName, rating, userId }) => {
-    userName = userName.trim();
-
-    const player = { id, userName, rating, userId };
-    playersNotPlayingNow.push(player);
-    return player;
+const addPlayer = (user) => {
+    
+    if (!user || !Object.keys(user).length) {
+        return console.log('no user to add', user)
+    }
+    const index = idlePlayers.findIndex((listedUser) => {
+        return user.userName === listedUser.userName
+    })
+    if (index !== -1) {
+        console.log('already in list')
+        return null
+    } else {
+        console.log('adding user to list')
+        idlePlayers.push(user)
+    }
+    return user;
 };
 
 const removePlayer = (id) => {
-    let index = playersPlayingNow.findIndex((player) => {
-        return player.id === id;
+    let index = busyPlayers.findIndex((player) => {
+        return player.id === id
     });
 
     if (index !== -1) {
-        return playersPlayingNow.splice(index, 1)[0];
+        return busyPlayers.splice(index, 1)[0]
     }
 
-    index = playersNotPlayingNow.findIndex((player) => {
-        return player.id === id;
+    index = idlePlayers.findIndex((player) => {
+        return player.id === id
     });
 
     if (index !== -1) {
-        return playersNotPlayingNow.splice(index, 1)[0];
+        return idlePlayers.splice(index, 1)[0]
     }
 }
 
 const transferPlayerToPlayingNowList = (id) => {
-    const index = playersNotPlayingNow.findIndex((player) => {
-        return player.id === id;
+    const index = idlePlayers.findIndex((player) => {
+        return player.id === id
     })
 
     if (index !== -1) {
-        const player = playersNotPlayingNow.splice(index, 1)[0];
-        playersPlayingNow.push(player);
+        const player = idlePlayers.splice(index, 1)[0];
+        busyPlayers.push(player);
     }
 }
 
 const transferPlayerTo_NOT_PlayingNowList = (id) => {
-    const index = playersPlayingNow.findIndex((player) => {
+    const index = busyPlayers.findIndex((player) => {
         return player.id === id;
     })
 
     if (index !== -1) {
-        const player = playersPlayingNow.splice(index, 1)[0];
-        playersNotPlayingNow.push(player);
+        const player = busyPlayers.splice(index, 1)[0];
+        idlePlayers.push(player);
     }
 }
 
 const getPlayer_FromNotPlayingList = (id) => {
-    return playersNotPlayingNow.find((player) => player.id === id);
+    return idlePlayers.find((player) => player.id === id);
 }
 
-const getPlayersNotPlayingNowList = () => {
-    return playersNotPlayingNow.slice();
+const getIdlePlayers = () => {
+    return idlePlayers.slice();
 }
 
 const getPlyersPlaying = () => {
-    return playersPlayingNow;
+    return busyPlayers;
 }
 
 const updateRating = (id, newRating) => {
-    let player = playersPlayingNow.find((player) => player.id === id);
+    let player = busyPlayers.find((player) => player.id === id)
     if (player) {
-        player.rating = newRating;
-        return;
+        player.rating = newRating
+        return
     }
 
-    player = playersNotPlayingNow.find((player) => player.id === id);
+    player = idlePlayers.find((player) => player.id === id)
     if (player) {
-        player.rating = newRating;
-        return;
+        player.rating = newRating
+        return
     }
 }
 
@@ -79,7 +89,7 @@ module.exports = {
     addPlayer,
     removePlayer,
     getPlayer_FromNotPlayingList,
-    getPlayersNotPlayingNowList,
+    getIdlePlayers,
     transferPlayerTo_NOT_PlayingNowList,
     transferPlayerToPlayingNowList,
     getPlyersPlaying,
