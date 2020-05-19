@@ -2,20 +2,22 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 const auth = async (req, res, next) => {
+    console.log(req.body.token)
     try {
-        const token = req.header('Authorization').replace('Bearer ', '')
+        const token = req.body.token//req.header('Authorization').replace('Bearer ', '')
         const decoded = jwt.verify(token, 'replaceThisStringLaterWithEnvVar')
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
         if (!user) {
+            console.log('failed to find user')
             throw new Error()
         }
-
         req.user = user
         req.token = token
+        console.log('authenticated')
         next()
     } catch (e) {
-        res.status(401).send({ error: 'Not authenticated' })
+        res.status(401).send({ error: 'Authentication failure' })
     }
 }
 

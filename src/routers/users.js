@@ -10,15 +10,16 @@ router.post('/users', async (req, res) => {
     const user = new User(req.body)
     try {
         await user.save()
-        res.status(201).send(user)
+        const token = await user.generateAuthToken()
+        res.status(201).send({user, token})
     } catch (e) {
         res.status(400).send(e)
     }
 })
 //get users list 
-router.get('/users', async (req, res) => {
+router.get('/users/', async (req, res) => {
     try {
-        const users = await User.find({})
+        const users = await User.findOne({})
         res.send(users)
     } catch(e) {
         res.status(500).send()
@@ -27,22 +28,23 @@ router.get('/users', async (req, res) => {
 //change rating
 router.patch('/users/me', auth, async (req, res) => {
     try {
-        const user = req.user;
-        user.rating = req.body.rating;
-        await user.save();
-        res.send(user);
+        const user = req.user
+        user.rating = req.body.rating
+        await user.save()
+        res.send(user)
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send(e)
     }
 });
 
 router.post('/users/login', async (req, res) => {
     try {
-        const user = await User.findByCredentials(req.body.userName, req.body.password);
-        const token = await user.generateAuthToken();        
-        res.send({ user, token });
+        const user = await User.findByCredentials(req.body.userName, req.body.password)
+        const token = await user.generateAuthToken()   
+        console.log('logged in')    
+        res.send({ user, token })
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send(e)
     }
 });
 
@@ -51,10 +53,11 @@ router.post('/users/logout', auth, async (req, res) => {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
         });
-        await req.user.save();
-        res.status(200).send();
+        await req.user.save()
+        console.log('logged out')
+        res.status(200).send()
     } catch (e) {
-        res.status(500).send();
+        res.status(500).send()
     }
 });
 module.exports = router
