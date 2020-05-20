@@ -17,7 +17,6 @@ const initiateSocketio = (server) => {
                 return console.log('empty user', user)
             }
             players.addPlayer(user);
-        //    console.log('got user', user)
             io.emit('hello', {
                 players: players.getIdlePlayers()
             });
