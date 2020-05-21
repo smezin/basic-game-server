@@ -7,23 +7,23 @@ const addPlayer = (user) => {
         return console.log('no user to add', user)
     }
     const index = idlePlayers.findIndex((listedUser) => {
-        console.log('user:\n', user.user.userName,'\nlisted user:\n', listedUser.user.userName)
-        return user.user.useName === listedUser.user.userName
+        return user.user._id === listedUser.user._id
     })
     if (index !== -1) {
-        console.log('already in list', index)
-     //   console.log(idlePlayers)
+        console.log('already in list, at index: ', index)
         return null
     } else {
-        console.log('adding user to list', user)
+        console.log('adding user to list')
         idlePlayers.push(user)
     }
     return user;
 };
 const getIdlePlayers = () => {
-    console.log(idlePlayers)
+    //console.log('those are the idle players', idlePlayers)
     return idlePlayers
 }
+
+
 const removePlayer = (id) => {
     let index = busyPlayers.findIndex((player) => {
         return player.id === id

@@ -16,11 +16,30 @@ const initiateSocketio = (server) => {
             if (!Object.keys(user).length) {
                 return console.log('empty user', user)
             }
+            user.socketID = socket.id
             players.addPlayer(user);
-            io.emit('hello', {
+            io.emit('IdlePlayers', {
                 players: players.getIdlePlayers()
-            });
-        });
+            })
+            console.log('SID:', user.socketID)
+        })
+
+
+        socket.on('play', (data) => {
+            let opponent = data[0]
+            let board = data[1]
+            let list = players.getIdlePlayers()
+            let opp = list.find((player) => player._id === opponent._id)
+            console.log('opp:',opp.user.userName, ' SID:', opp.socketID)
+            console.log(board)
+            io.to(opp.socketID).emit('reply', board)   
+            //socket.emit('reply', board)            
+        })
+
+
+
+
+
 
         socket.on('playerEnterChoosePlayers', (player) => {
             players.transferPlayerTo_NOT_PlayingNowList(player.id);
