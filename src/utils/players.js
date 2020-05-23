@@ -1,46 +1,54 @@
 const idlePlayers = [];
 const busyPlayers = [];
 
-const addPlayer = (user) => {
+const addPlayer = (player) => {
     
-    if (!user || !Object.keys(user).length) {
-        return console.log('no user to add', user)
+    if (!player || !Object.keys(player).length) {
+        return console.log('no user to add', player)
     }
     const index = idlePlayers.findIndex((listedUser) => {
-        return user.user._id === listedUser.user._id
+        return player.user._id === listedUser.user._id
     })
     if (index !== -1) {
         console.log('already in list, at index: ', index)
         return null
     } else {
         console.log('adding user to list')
-        idlePlayers.push(user)
+        idlePlayers.push(player)
     }
-    return user;
+    return player
 };
+
 const getIdlePlayers = () => {
-    //console.log('those are the idle players', idlePlayers)
     return idlePlayers
 }
 
+const getIdlePlayerBySockID = (socket) => {
+    return idlePlayers.find((player) => player.socketID === socket)
+}
 
-const removePlayer = (id) => {
+
+const removePlayerBySockID = (socket) => {
+    console.log('sokc', socket)
     let index = busyPlayers.findIndex((player) => {
-        return player.id === id
-    });
-
+        return player.socketID === socket
+    })
     if (index !== -1) {
+        console.log('removing from busy')
         return busyPlayers.splice(index, 1)[0]
     }
-
+    
     index = idlePlayers.findIndex((player) => {
-        return player.id === id
-    });
-
+        return player.socketID === socket
+    })
     if (index !== -1) {
+        console.log('removing from idle')
         return idlePlayers.splice(index, 1)[0]
     }
 }
+
+
+
 
 const transferPlayerToPlayingNowList = (id) => {
     const index = idlePlayers.findIndex((player) => {
@@ -64,9 +72,6 @@ const transferPlayerTo_NOT_PlayingNowList = (id) => {
     }
 }
 
-const getPlayer_FromNotPlayingList = (id) => {
-    return idlePlayers.find((player) => player.id === id)
-}
 
 
 
@@ -90,8 +95,8 @@ const updateRating = (id, newRating) => {
 
 module.exports = {
     addPlayer,
-    removePlayer,
-    getPlayer_FromNotPlayingList,
+    removePlayerBySockID,
+    getIdlePlayerBySockID,
     getIdlePlayers,
     transferPlayerTo_NOT_PlayingNowList,
     transferPlayerToPlayingNowList,

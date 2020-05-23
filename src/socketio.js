@@ -18,12 +18,9 @@ const initiateSocketio = (server) => {
             }
             user.socketID = socket.id
             players.addPlayer(user);
-            io.emit('IdlePlayers', {
-                players: players.getIdlePlayers()
-            })
+            io.emit('IdlePlayers', players.getIdlePlayers())
             console.log('SID:', user.socketID)
         })
-
 
         socket.on('play', (data) => {
             let opponent = data[0]
@@ -32,8 +29,31 @@ const initiateSocketio = (server) => {
             let opp = list.find((player) => player._id === opponent._id)
             console.log('opp:',opp.user.userName, ' SID:', opp.socketID)
             console.log(board)
-            io.to(opp.socketID).emit('reply', board)   
-            //socket.emit('reply', board)            
+            io.to(opp.socketID).emit('reply', board)          
+        })
+
+        socket.on('getIdlePlayers', (player) => {
+            io.to(player.socketID).emit('IdlePlayers', players.getIdlePlayers())
+        })
+
+        socket.on('disconnect', () => {
+            const leavingPlayer = players.removePlayerBySockID(socket.id);
+            if (leavingPlayer) {
+                console.log(leavingPlayer.user.userName + "  disconnected!");
+                io.emit('IdlePlayers', players.getIdlePlayers())
+            }
+        })
+        socket.on('offerGame', (opponent) => {
+            let me = players.getIdlePlayerBySockID(socket.id)
+            io.to(opponent.socketID).emit('letsPlay', me)
+        })
+        socket.on('gameAccepted', (opponent) => {
+            let me = players.getIdlePlayerBySockID(socket.id)
+            io.to(opponent.socketID).emit('startingGame', me)
+        })
+        socket.on('gameDeclined', (opponent) => {
+            let me = players.getIdlePlayerBySockID(socket.id)
+            io.to(opponent.socketID).emit('noGame', me)
         })
 
 
@@ -111,16 +131,7 @@ const initiateSocketio = (server) => {
             }
         });
 
-        socket.on('disconnect', () => {
-            const leavingPlayer = players.removePlayer(socket.id);
-
-            if (leavingPlayer) {
-                console.log(leavingPlayer.userName + " has left the building!");
-                io.emit('playersList', {
-                    players: players.getPlayersNotPlayingNowList()
-                });
-            }
-        });
+        
     })
 }
 
