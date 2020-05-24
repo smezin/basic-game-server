@@ -18,7 +18,7 @@ const initiateSocketio = (server) => {
             }
             user.socketID = socket.id
             players.addPlayer(user);
-            io.emit('IdlePlayers', players.getIdlePlayers())
+            io.emit('idlePlayers', players.getIdlePlayers())
             console.log('SID:', user.socketID)
         })
 
@@ -33,14 +33,14 @@ const initiateSocketio = (server) => {
         })
 
         socket.on('getIdlePlayers', (player) => {
-            io.to(player.socketID).emit('IdlePlayers', players.getIdlePlayers())
+            io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
         })
 
         socket.on('disconnect', () => {
             const leavingPlayer = players.removePlayerBySockID(socket.id);
             if (leavingPlayer) {
                 console.log(leavingPlayer.user.userName + "  disconnected!");
-                io.emit('IdlePlayers', players.getIdlePlayers())
+                io.emit('idlePlayers', players.getIdlePlayers())
             }
         })
         socket.on('offerGame', (opponent) => {
