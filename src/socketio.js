@@ -5,12 +5,7 @@ const initiateSocketio = (server) => {
     const io = socketio(server);
 
     io.on('connection', (socket) => {
-        console.log('New WebSocket connection');
-        socket.emit('hello', 'NODE JS server says connected') 
-
-        socket.on('hello', (msg) => {
-            console.log(msg)
-        })
+        console.log('New WebSocket connection')
 
         socket.on('enterAsIdlePlayer', (user) => {
             if (!Object.keys(user).length) {
@@ -54,6 +49,9 @@ const initiateSocketio = (server) => {
         socket.on('gameDeclined', (opponent) => {
             let me = players.getIdlePlayerBySockID(socket.id)
             io.to(opponent.socketID).emit('noGame', me)
+        })
+        socket.on('boardData', () => {
+            console.log('got the board from ')
         })
 
 

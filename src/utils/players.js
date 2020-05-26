@@ -29,7 +29,6 @@ const getIdlePlayerBySockID = (socket) => {
 
 
 const removePlayerBySockID = (socket) => {
-    console.log('sokc', socket)
     let index = busyPlayers.findIndex((player) => {
         return player.socketID === socket
     })

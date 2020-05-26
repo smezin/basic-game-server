@@ -19,7 +19,7 @@ router.post('/users', async (req, res) => {
 //get users list 
 router.get('/users/', async (req, res) => {
     try {
-        const users = await User.findOne({})
+        const users = await User.find({})
         res.send(users)
     } catch(e) {
         res.status(500).send()
