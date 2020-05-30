@@ -6,25 +6,18 @@ const initiateSocketio = (server) => {
 
     io.on('connection', (socket) => {
         console.log('New WebSocket connection')
+        io.to(socket.id).emit('idlePlayers', players.getIdlePlayers())
 
         socket.on('enterAsIdlePlayer', (user) => {
             if (!Object.keys(user).length) {
                 return console.log('empty user', user)
             }
             user.socketID = socket.id
-            players.addPlayer(user);
+            if (players.addPlayer(user)) {
+                io.to(socket.id).emit('enteredRoom')
+            }
             io.emit('idlePlayers', players.getIdlePlayers())
             console.log('SID:', user.socketID)
-        })
-
-        socket.on('play', (data) => {
-            let opponent = data[0]
-            let board = data[1]
-            let list = players.getIdlePlayers()
-            let opp = list.find((player) => player._id === opponent._id)
-            console.log('opp:',opp.user.userName, ' SID:', opp.socketID)
-            console.log(board)
-            io.to(opp.socketID).emit('reply', board)          
         })
 
         socket.on('getIdlePlayers', (player) => {
@@ -36,6 +29,7 @@ const initiateSocketio = (server) => {
             if (leavingPlayer) {
                 console.log(leavingPlayer.user.userName + "  disconnected!");
                 io.emit('idlePlayers', players.getIdlePlayers())
+                io.to(socket.id).emit('leftRoom')
             }
         })
         socket.on('offerGame', (opponent) => {
@@ -44,91 +38,24 @@ const initiateSocketio = (server) => {
         })
         socket.on('gameAccepted', (opponent) => {
             let me = players.getIdlePlayerBySockID(socket.id)
+            players.movePlayerFromIdleToBusy(opponent.socketID)
+            players.movePlayerFromIdleToBusy(socket.id)
             io.to(opponent.socketID).emit('startingGame', me)
         })
         socket.on('gameDeclined', (opponent) => {
             let me = players.getIdlePlayerBySockID(socket.id)
             io.to(opponent.socketID).emit('noGame', me)
         })
-        socket.on('boardData', () => {
-            console.log('got the board from ')
+        socket.on('boardData', (opponent, board) => {
+            console.log('got the board from ', opponent)
+            io.to(opponent.socketID).emit('gameMove', board)
         })
-
-
-
-
-
-
-        socket.on('playerEnterChoosePlayers', (player) => {
-            players.transferPlayerTo_NOT_PlayingNowList(player.id);
-
-            io.emit('playersList', {
-                players: players.getPlayersNotPlayingNowList()
-            });
-        });
-
-        socket.on('choosePlayer', (opponent) => {
-            const I_Player = players.getPlayer_FromNotPlayingList(socket.id);
-            socket.broadcast.to(opponent.id).emit('choosedByPlayer', I_Player);
-        });
-
-        socket.on('agreeToPlay', (opponent, callback) => {
-            const getRandomBoolean = () => {
-                return Math.floor(Math.random() * Math.floor(1)) === 1 ? true : false;
+        socket.on('amIInRoom', () => {
+            if (players.isIdInRoom(socket.id)) {
+                console.log('entered')
+                io.to(socket.id).emit('enteredRoom')
             }
-            const IIsBlue = getRandomBoolean();
-            const opponentIsBlue = !IIsBlue;
-
-            socket.broadcast.to(opponent.id).emit('opponentAgreedToPlay', opponentIsBlue);
-            callback(IIsBlue);
-            players.transferPlayerToPlayingNowList(opponent.id);
-            players.transferPlayerToPlayingNowList(socket.id);
-
-            io.emit('playersList', {
-                players: players.getPlayersNotPlayingNowList()
-            });
-        });
-
-        socket.on('dropData', (dropData) => {
-            socket.broadcast.to(dropData.toPlayer.id).emit('getDropData', dropData);
-        });
-
-        socket.on('moveDone', (moveDoneData) => {
-            socket.broadcast.to(moveDoneData.toPlayer.id).emit('getMoveDone', moveDoneData);
-        });
-
-        socket.on('ratingUpdate', (NewRating) => {
-            players.updateRating(socket.id, NewRating);
-
-            io.emit('playersList', {
-                players: players.getPlayersNotPlayingNowList()
-            });
-        });
-
-        socket.on('playerLeftTheGame', (opponent) => {
-            if (opponent !== null) {
-                console.log('player left game');
-                socket.broadcast.to(opponent.id).emit('opponentLeftTheGame');
-            }
-        });
-
-        socket.on('tie', (opponentId) => {
-            if (opponentId) {
-                socket.broadcast.to(opponentId).emit('tie');
-            }
-        });
-
-        socket.on('disconnection', () => {
-            const leavingPlayer = players.removePlayer(socket.id);
-
-            if (leavingPlayer) {
-                console.log(leavingPlayer.userName + " has left the building!");
-                io.emit('playersList', {
-                    players: players.getPlayersNotPlayingNowList()
-                });
-            }
-        });
-
+        })
         
     })
 }

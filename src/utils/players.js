@@ -4,7 +4,7 @@ const busyPlayers = [];
 const addPlayer = (player) => {
     
     if (!player || !Object.keys(player).length) {
-        return console.log('no user to add', player)
+        return console.log('no player to add', player)
     }
     const index = idlePlayers.findIndex((listedUser) => {
         return player.user._id === listedUser.user._id
@@ -27,6 +27,15 @@ const getIdlePlayerBySockID = (socket) => {
     return idlePlayers.find((player) => player.socketID === socket)
 }
 
+const isIdInRoom = (socket) => {
+    let index = idlePlayers.findIndex((player) => {
+        return player.socketID === socket
+    })
+    if (index === -1) {
+        return false
+    }
+    return true
+}
 
 const removePlayerBySockID = (socket) => {
     let index = busyPlayers.findIndex((player) => {
@@ -46,30 +55,39 @@ const removePlayerBySockID = (socket) => {
     }
 }
 
-
-
-
-const transferPlayerToPlayingNowList = (id) => {
-    const index = idlePlayers.findIndex((player) => {
-        return player.id === id
+const movePlayerFromIdleToBusy = (socket) => {
+    let index = idlePlayers.findIndex((player) => {
+        return player.socketID === socket
     })
-
     if (index !== -1) {
-        const player = idlePlayers.splice(index, 1)[0];
+        console.log('removing from idle')
+        const player = getIdlePlayerBySockID(socket)
+        idlePlayers.splice(index, 1)[0]
+        console.log('adding to busy')
         busyPlayers.push(player)
+    } else {
+        console.log('player not found')
     }
 }
 
-const transferPlayerTo_NOT_PlayingNowList = (id) => {
-    const index = busyPlayers.findIndex((player) => {
-        return player.id === id
+const movePlayerFromBusyToIdle = (socket) => {
+    let index = busyPlayers.findIndex((player) => {
+        return player.socketID === socket
     })
-
     if (index !== -1) {
-        const player = busyPlayers.splice(index, 1)[0]
+        console.log('removing from busy')
+        const player = getIdlePlayerBySockID(socket)
+        busyPlayers.splice(index, 1)[0]
+        console.log('adding to idle')
         idlePlayers.push(player)
+    } else {
+        console.log('player not found')
     }
 }
+
+
+
+
 
 
 
@@ -78,27 +96,15 @@ const getPlyersPlaying = () => {
     return busyPlayers
 }
 
-const updateRating = (id, newRating) => {
-    let player = busyPlayers.find((player) => player.id === id)
-    if (player) {
-        player.rating = newRating
-        return
-    }
-
-    player = idlePlayers.find((player) => player.id === id)
-    if (player) {
-        player.rating = newRating
-        return
-    }
-}
 
 module.exports = {
     addPlayer,
     removePlayerBySockID,
     getIdlePlayerBySockID,
     getIdlePlayers,
-    transferPlayerTo_NOT_PlayingNowList,
-    transferPlayerToPlayingNowList,
+    movePlayerFromIdleToBusy,
+    movePlayerFromBusyToIdle,
+    isIdInRoom,
     getPlyersPlaying,
-    updateRating
+   
 }
