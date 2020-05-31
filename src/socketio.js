@@ -19,11 +19,9 @@ const initiateSocketio = (server) => {
             io.emit('idlePlayers', players.getIdlePlayers())
             console.log('SID:', user.socketID)
         })
-
         socket.on('getIdlePlayers', (player) => {
             io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
         })
-
         socket.on('disconnect', () => {
             const leavingPlayer = players.removePlayerBySockID(socket.id);
             if (leavingPlayer) {
@@ -50,12 +48,13 @@ const initiateSocketio = (server) => {
             console.log('got the board from ', opponent)
             io.to(opponent.socketID).emit('gameMove', board)
         })
-        socket.on('amIInRoom', () => {
-            if (players.isIdInRoom(socket.id)) {
-                console.log('entered')
-                io.to(socket.id).emit('enteredRoom')
-            }
+        socket.on('iLost', (opponent) => {
+            io.to(opponent.socketID).emit('youWon')
         })
+        socket.on('iWon', (opponent) => {
+            io.to(opponent.socketID).emit('youLost')
+        })
+        
         
     })
 }
