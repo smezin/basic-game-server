@@ -55,7 +55,6 @@ const initiateSocketio = (server) => {
             io.to(opponent.socketID).emit('youLost')
         })
         
-        
     })
 }
 
