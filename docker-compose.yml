@@ -2,7 +2,7 @@ version: "2"
 services:
   game-server:
       container_name: game-server
-      image: game-server
+      image: smezin/game-server
       restart: always
       build: .
       ports:
