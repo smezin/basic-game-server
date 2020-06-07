@@ -5,19 +5,18 @@ const initiateSocketio = (server) => {
     const io = socketio(server);
 
     io.on('connection', (socket) => {
-        console.log('New WebSocket connection')
+        console.log('New WebSocket connection ', socket.id)
         io.to(socket.id).emit('idlePlayers', players.getIdlePlayers())
 
         socket.on('enterAsIdlePlayer', (user) => {
             if (!Object.keys(user).length) {
-                return console.log('empty user', user)
+                return console.log('empty data packet')
             }
             user.socketID = socket.id
             if (players.addPlayer(user)) {
                 io.to(socket.id).emit('enteredRoom')
             }
             io.emit('idlePlayers', players.getIdlePlayers())
-            console.log('SID:', user.socketID)
         })
         socket.on('getIdlePlayers', (player) => {
             io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
@@ -25,7 +24,7 @@ const initiateSocketio = (server) => {
         socket.on('disconnect', () => {
             const leavingPlayer = players.removePlayerBySockID(socket.id);
             if (leavingPlayer) {
-                console.log(leavingPlayer.user.userName + "  disconnected!");
+                console.log(leavingPlayer.user.userName + " is disconnected");
                 io.emit('idlePlayers', players.getIdlePlayers())
                 io.to(socket.id).emit('leftRoom')
             }
