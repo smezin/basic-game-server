@@ -85,18 +85,6 @@ const movePlayerFromBusyToIdle = (socket) => {
     }
 }
 
-
-
-
-
-
-
-
-const getPlyersPlaying = () => {
-    return busyPlayers
-}
-
-
 module.exports = {
     addPlayer,
     removePlayerBySockID,
@@ -104,7 +92,5 @@ module.exports = {
     getIdlePlayers,
     movePlayerFromIdleToBusy,
     movePlayerFromBusyToIdle,
-    isIdInRoom,
-    getPlyersPlaying,
-   
+    isIdInRoom   
 }
