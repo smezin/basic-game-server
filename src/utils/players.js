@@ -1,10 +1,10 @@
-const idlePlayers = [];
-const busyPlayers = [];
+const idlePlayers = []
+const busyPlayers = []
 
 const addPlayer = (player) => {
     
     if (!player || !Object.keys(player).length) {
-        return console.log('no player to add', player)
+        return console.log('no player to add')
     }
     const index = idlePlayers.findIndex((listedUser) => {
         return player.user._id === listedUser.user._id
@@ -17,7 +17,7 @@ const addPlayer = (player) => {
         idlePlayers.push(player)
     }
     return player
-};
+}
 
 const getIdlePlayers = () => {
     return idlePlayers
@@ -84,6 +84,21 @@ const movePlayerFromBusyToIdle = (socket) => {
         console.log('player not found')
     }
 }
+const isLoggedIn = (userName) => {
+    let index = idlePlayers.findIndex((player) => {
+        return player.user.userName === userName
+    })
+    if (index !== -1) {
+        return true
+    }
+    let index = busyPlayers.findIndex((player) => {
+        return player.user.userName === userName
+    })
+    if (index !== -1) {
+        return true
+    }
+    return false
+}
 
 module.exports = {
     addPlayer,
@@ -92,5 +107,6 @@ module.exports = {
     getIdlePlayers,
     movePlayerFromIdleToBusy,
     movePlayerFromBusyToIdle,
-    isIdInRoom   
+    isIdInRoom,
+    isLoggedIn  
 }
