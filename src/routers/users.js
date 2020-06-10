@@ -40,7 +40,7 @@ router.patch('/users/me', auth, async (req, res) => {
 
 router.post('/users/login', async (req, res) => {
     if (players.isLoggedIn(req.body.userName)) {
-        return console.log('already logged in')
+        res.status(500).send('Loggen on other device')
     }
     try {
         const user = await User.findByCredentials(req.body.userName, req.body.password)

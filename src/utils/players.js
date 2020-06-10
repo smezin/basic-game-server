@@ -85,13 +85,13 @@ const movePlayerFromBusyToIdle = (socket) => {
     }
 }
 const isLoggedIn = (userName) => {
-    var index = idlePlayers.findIndex((player) => {
+    let index = idlePlayers.findIndex((player) => {
         return player.user.userName === userName
     })
     if (index !== -1) {
         return true
     }
-    index = busyPlayers.findIndex((player) => {
+    let index = busyPlayers.findIndex((player) => {
         return player.user.userName === userName
     })
     if (index !== -1) {
