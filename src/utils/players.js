@@ -1,14 +1,11 @@
 const idlePlayers = []
 const busyPlayers = []
 
-const addPlayer = (player) => {
-    
+const addPlayer = (player) => { 
     if (!player || !Object.keys(player).length) {
         return console.log('no player to add')
     }
-    const index = idlePlayers.findIndex((listedUser) => {
-        return player.user._id === listedUser.user._id
-    })
+    const index = idlePlayers.findIndex((listedUser) => player.user._id === listedUser.user._id)
     if (index !== -1) {
         console.log('already in list, at index: ', index)
         return null
@@ -28,9 +25,7 @@ const getIdlePlayerBySockID = (socket) => {
 }
 
 const isIdInRoom = (socket) => {
-    let index = idlePlayers.findIndex((player) => {
-        return player.socketID === socket
-    })
+    let index = idlePlayers.findIndex((player) => player.socketID === socket)
     if (index === -1) {
         return false
     }
@@ -38,17 +33,13 @@ const isIdInRoom = (socket) => {
 }
 
 const removePlayerBySockID = (socket) => {
-    let index = busyPlayers.findIndex((player) => {
-        return player.socketID === socket
-    })
+    var index = busyPlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
         console.log('removing from busy')
         return busyPlayers.splice(index, 1)[0]
     }
     
-    index = idlePlayers.findIndex((player) => {
-        return player.socketID === socket
-    })
+    index = idlePlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
         console.log('removing from idle')
         return idlePlayers.splice(index, 1)[0]
@@ -56,9 +47,7 @@ const removePlayerBySockID = (socket) => {
 }
 
 const movePlayerFromIdleToBusy = (socket) => {
-    let index = idlePlayers.findIndex((player) => {
-        return player.socketID === socket
-    })
+    let index = idlePlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
         console.log('removing from idle')
         const player = getIdlePlayerBySockID(socket)
@@ -71,9 +60,7 @@ const movePlayerFromIdleToBusy = (socket) => {
 }
 
 const movePlayerFromBusyToIdle = (socket) => {
-    let index = busyPlayers.findIndex((player) => {
-        return player.socketID === socket
-    })
+    let index = busyPlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
         console.log('removing from busy')
         const player = getIdlePlayerBySockID(socket)
@@ -85,15 +72,11 @@ const movePlayerFromBusyToIdle = (socket) => {
     }
 }
 const isLoggedIn = (userName) => {
-    let index = idlePlayers.findIndex((player) => {
-        return player.user.userName === userName
-    })
+    var index = idlePlayers.findIndex((player) => player.user.userName === userName)
     if (index !== -1) {
         return true
     }
-    let index = busyPlayers.findIndex((player) => {
-        return player.user.userName === userName
-    })
+    index = busyPlayers.findIndex((player) => player.user.userName === userName)
     if (index !== -1) {
         return true
     }

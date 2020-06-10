@@ -1,8 +1,8 @@
-const socketio = require('socket.io');
-const players = require('./utils/players');
+const socketio = require('socket.io')
+const players = require('./utils/players')
 
 const initiateSocketio = (server) => {
-    const io = socketio(server);
+    const io = socketio(server)
 
     io.on('connection', (socket) => {
         console.log('New WebSocket connection ', socket.id)
@@ -22,9 +22,9 @@ const initiateSocketio = (server) => {
             io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
         })
         socket.on('disconnect', () => {
-            const leavingPlayer = players.removePlayerBySockID(socket.id);
+            const leavingPlayer = players.removePlayerBySockID(socket.id)
             if (leavingPlayer) {
-                console.log(leavingPlayer.user.userName + " is disconnected");
+                console.log(leavingPlayer.user.userName + " is disconnected")
                 io.emit('idlePlayers', players.getIdlePlayers())
                 io.to(socket.id).emit('leftRoom')
             }
@@ -57,4 +57,4 @@ const initiateSocketio = (server) => {
     })
 }
 
-module.exports = initiateSocketio;
+module.exports = initiateSocketio

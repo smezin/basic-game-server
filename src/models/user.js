@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const validator = require('validator')
 
 const userSchema = new mongoose.Schema({
@@ -34,21 +34,21 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.toJSON = function () {
-    const user = this;
-    const userObject = user.toObject();
+    const user = this
+    const userObject = user.toObject()
 
-    delete userObject.password;
-    delete userObject.tokens;
+    delete userObject.password
+    delete userObject.tokens
 
-    return userObject;
+    return userObject
 }
 
 userSchema.methods.generateAuthToken = async function () {
-    const user = this;
+    const user = this
     const token = jwt.sign({ _id: user._id.toString() }, 'myarbitrarystring')
     user.tokens = user.tokens.concat({ token })
     await user.save()
-    return token;
+    return token
 }
 
 userSchema.statics.findByCredentials = async (userName, password) => {
@@ -56,11 +56,11 @@ userSchema.statics.findByCredentials = async (userName, password) => {
     if (!user) {
         throw new Error('Unable to login')
     }
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    const isPasswordMatch = await bcrypt.compare(password, user.password)
     if (!isPasswordMatch) {
         throw new Error('Unable to login')
     }
-    return user;
+    return user
 }
 //Hash password before saving to db
 userSchema.pre('save', async function (next) {
@@ -71,6 +71,6 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema)
 
-module.exports = User;
+module.exports = User

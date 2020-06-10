@@ -36,11 +36,11 @@ router.patch('/users/me', auth, async (req, res) => {
     } catch (e) {
         res.status(400).send(e)
     }
-});
+})
 
 router.post('/users/login', async (req, res) => {
     if (players.isLoggedIn(req.body.userName)) {
-        res.status(500).send('Loggen on other device')
+        res.status(500).send('Login failure. Logged in on other device')
     }
     try {
         const user = await User.findByCredentials(req.body.userName, req.body.password)
@@ -50,18 +50,16 @@ router.post('/users/login', async (req, res) => {
     } catch (e) {
         res.status(400).send(e)
     }
-});
+})
 
 router.post('/users/logout', auth, async (req, res) => {
     try {
-        req.user.tokens = req.user.tokens.filter((token) => {
-            return token.token !== req.token
-        });
+        req.user.tokens = req.user.tokens.filter((token) => token.token !== req.token)
         await req.user.save()
         console.log('logged out')
         res.status(200).send({'user':'out'})
     } catch (e) {
         res.status(500).send()
     }
-});
+})
 module.exports = router
