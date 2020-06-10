@@ -38,10 +38,7 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 })
 
-router.post('/users/login', async (req, res) => {
-    if (players.isLoggedIn(req.body.userName)) {
-        res.status(500).send('Login failure. Logged in on other device')
-    }
+router.post('/users/login', async (req, res) => { 
     try {
         const user = await User.findByCredentials(req.body.userName, req.body.password)
         const token = await user.generateAuthToken()   

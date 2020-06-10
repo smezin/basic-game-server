@@ -72,11 +72,11 @@ const movePlayerFromBusyToIdle = (socket) => {
     }
 }
 const isLoggedIn = (userName) => {
-    var index = idlePlayers.findIndex((player) => player.user.userName === userName)
+    var index = idlePlayers.findIndex((player) => player.user.userName.localeCompare(userName) === 0)
     if (index !== -1) {
         return true
     }
-    index = busyPlayers.findIndex((player) => player.user.userName === userName)
+    index = busyPlayers.findIndex((player) => player.user.userName.localeCompare(userName) === 0)
     if (index !== -1) {
         return true
     }
