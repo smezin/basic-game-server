@@ -24,7 +24,7 @@ const initiateSocketio = (server) => {
         socket.on('disconnect', () => {
             const leavingPlayer = players.removePlayerBySockID(socket.id)
             if (leavingPlayer) {
-                console.log(leavingPlayer.user.userName + " is disconnected")
+                console.log(leavingPlayer.user.userName + " left the room")
                 io.emit('idlePlayers', players.getIdlePlayers())
                 io.to(socket.id).emit('leftRoom')
             }

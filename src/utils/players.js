@@ -7,7 +7,6 @@ const addPlayer = (player) => {
     }
     const index = idlePlayers.findIndex((listedUser) => player.user._id === listedUser.user._id)
     if (index !== -1) {
-        console.log('already in list, at index: ', index)
         return null
     } else {
         console.log('adding user to list')
