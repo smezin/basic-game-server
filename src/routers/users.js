@@ -2,6 +2,7 @@ const express = require('express')
 require('../db/mongoose')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
+const players = require('../utils/players')
 const router = new express.Router()
 
 //create new user
@@ -28,7 +29,8 @@ router.get('/users/', async (req, res) => {
 router.patch('/users/me', auth, async (req, res) => {
     try {
         const user = req.user
-        user.rating = req.body.rating
+        user.wins = req.body.wins
+        user.loses = req.bidy.loses
         await user.save()
         res.send(user)
     } catch (e) {
@@ -37,6 +39,9 @@ router.patch('/users/me', auth, async (req, res) => {
 });
 
 router.post('/users/login', async (req, res) => {
+    if (players.isLoggedIn(req.body.userName)) {
+        return console.log('already logged in')
+    }
     try {
         const user = await User.findByCredentials(req.body.userName, req.body.password)
         const token = await user.generateAuthToken()   
