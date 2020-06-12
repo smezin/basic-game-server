@@ -3,7 +3,7 @@ const players = require('./utils/players')
 
 const initiateSocketio = (server) => {
     const io = socketio(server)
-
+    //refactor to sub funcs in different file
     io.on('connection', (socket) => {
         console.log('New WebSocket connection ', socket.id)
         io.to(socket.id).emit('idlePlayers', players.getIdlePlayers())

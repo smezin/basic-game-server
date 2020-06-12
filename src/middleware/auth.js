@@ -3,8 +3,8 @@ const User = require('../models/user')
 
 const auth = async (req, res, next) => {
     console.log(req.body.token)
-    try {
-        const token = req.body.token//req.header('Authorization').replace('Bearer ', '')
+    try { //break code to repository and service!!!!!
+        const token = req.body.token
         const decoded = jwt.verify(token, 'myarbitrarystring')
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
