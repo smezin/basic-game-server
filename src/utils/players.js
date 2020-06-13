@@ -7,7 +7,7 @@ const addPlayer = (player) => {
     }
     const index = idlePlayers.findIndex((listedUser) => player.user._id === listedUser.user._id)
     if (index !== -1) {
-        return null
+        return player
     } else {
         console.log('adding user to list')
         idlePlayers.push(player)
