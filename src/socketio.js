@@ -13,30 +13,12 @@ const initiateSocketio = (server) => {
         socket.on('enterAsIdlePlayer', (player) => events.enterAsIdlePlayer(player, socket, io))
         socket.on('getIdlePlayers', (player) => events.getIdlePlayers(player, io))
         socket.on('disconnect', () => events.disconnect(socket, io))
-       
-
-        socket.on('offerGame', (opponent) => {
-            let me = players.getIdlePlayerBySockID(socket.id)
-            io.to(opponent.socketID).emit('letsPlay', me)
-        })
-       
+        socket.on('offerGame', (opponent) => events.offerGame(opponent, socket, io))       
         socket.on('gameAccepted', (opponent) => events.gameAccepted(opponent, socket, io))
-
-        socket.on('gameDeclined', (opponent) => {
-            let me = players.getIdlePlayerBySockID(socket.id)
-            io.to(opponent.socketID).emit('noGame', me)
-        })
-        socket.on('boardData', (opponent, board) => {
-            console.log('got the board from ', opponent)
-            io.to(opponent.socketID).emit('gameMove', board)
-        })
-        socket.on('iLost', (opponent) => {
-            io.to(opponent.socketID).emit('youWon')
-        })
-        socket.on('iWon', (opponent) => {
-            io.to(opponent.socketID).emit('youLost')
-        })
-        
+        socket.on('gameDeclined', (opponent) => events.gameDeclined(opponent, socket, io))
+        socket.on('boardData', (opponent, board) => events.boardData(opponent, board, io))
+        socket.on('iLost', (opponent) => events.iLost(opponent, io))
+        socket.on('iWon', (opponent) => events.iWon(opponent, io))  
     })
 }
 
