@@ -1,6 +1,7 @@
+//change arrys to maps
 const idlePlayers = []
 const busyPlayers = []
-
+//
 const addPlayer = (player) => { 
     if (!player || !Object.keys(player).length) {
         return console.log('no player to add')

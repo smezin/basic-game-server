@@ -8,7 +8,7 @@ const router = new express.Router()
 //create new user
 router.post('/users', async (req, res) => {
     const user = new User(req.body)
-    try {
+    try { //loose all try/catch and convert to global error handler
         await user.save()
         const token = await user.generateAuthToken()
         res.status(201).send({user, token})
