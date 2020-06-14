@@ -1,4 +1,5 @@
 require('dotenv').config()
+require('../errorHandler')
 const app = require('./app')
 const http = require('http')
 const initateSocketio = require('./socketio')

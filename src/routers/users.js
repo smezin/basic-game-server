@@ -5,7 +5,7 @@ const auth = require('../middleware/auth')
 const {logger} = require('../middleware/winstonLogger')
 
 const router = new express.Router()
-//create new user
+
 router.post('/users', async (req, res) => {
     const user = new User(req.body)
     try { //loose all try/catch and convert to global error handler
@@ -16,7 +16,7 @@ router.post('/users', async (req, res) => {
         res.status(400).send(e)
     }
 })
-//get users list 
+
 router.get('/users/', async (req, res) => {
     try {
         const users = await User.find({})
@@ -25,12 +25,12 @@ router.get('/users/', async (req, res) => {
         res.status(500).send()
     }
 })
-//change rating
+
 router.patch('/users/me', auth, async (req, res) => {
     try {
         const user = req.user
         user.wins = req.body.wins
-        user.loses = req.bidy.loses
+        user.loses = req.body.loses
         await user.save()
         res.send(user)
     } catch (e) {
