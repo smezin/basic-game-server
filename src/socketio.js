@@ -1,15 +1,17 @@
 const events = require('./utils/events')
 const socketio = require('socket.io')
 const players = require('./utils/players')
+const {logger} = require('./middleware/winstonLogger')
 
 const initiateSocketio = (server) => {
     const io = socketio(server)
     
     io.on('connection', (socket) => {
-        console.log('New WebSocket connection ', socket.id)
-
+        logger.log ({
+            level:'info',
+            message:`new web socket connection ${socket.id}`
+        })
         io.to(socket.id).emit('idlePlayers', players.getIdlePlayers())
-
         socket.on('enterAsIdlePlayer', (player) => events.enterAsIdlePlayer(player, socket, io))
         socket.on('getIdlePlayers', (player) => events.getIdlePlayers(player, io))
         socket.on('disconnect', () => events.disconnect(socket, io))

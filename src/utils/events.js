@@ -1,4 +1,6 @@
 const players = require('./players')
+const winston = require('../middleware/winstonLogger')
+const logger = winston.logger
 
 const gameAccepted = (opponent, socket, io) => {
     let me = players.getIdlePlayerBySockID(socket.id)
@@ -8,7 +10,11 @@ const gameAccepted = (opponent, socket, io) => {
 }
 const enterAsIdlePlayer = (player, socket, io) => {
     if (!Object.keys(player).length) {
-        return console.log('empty data packet')
+        logger.log({
+            level: 'warn',
+            message: `recieved empty data packet`
+        })  
+        return
     }
     player.socketID = socket.id
     if (players.addPlayer(player)) {
@@ -16,13 +22,17 @@ const enterAsIdlePlayer = (player, socket, io) => {
     }
     io.emit('idlePlayers', players.getIdlePlayers())
 }
+
 const getIdlePlayers = (player, io) => {
     io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
 }
 const disconnect = (socket, io) => {
     const leavingPlayer = players.removePlayerBySockID(socket.id)
     if (leavingPlayer) {
-        console.log(leavingPlayer.user.userName + " left the room")
+        logger.log({
+            level: 'info',
+            message: `${leavingPlayer.user.userName} left the room`
+        })  
         io.emit('idlePlayers', players.getIdlePlayers())
         io.to(socket.id).emit('leftRoom')
     }
@@ -36,7 +46,6 @@ const gameDeclined = (opponent, socket, io) => {
     io.to(opponent.socketID).emit('noGame', me)
 }
 const boardData = (opponent, board, io) => {
-    console.log('got the board from ', opponent)
     io.to(opponent.socketID).emit('gameMove', board)
 }
 const iLost = (opponent, io) => {

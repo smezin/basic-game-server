@@ -2,15 +2,24 @@
 const idlePlayers = []
 const busyPlayers = []
 //
+const {logger} = require('../middleware/winstonLogger')
+
 const addPlayer = (player) => { 
     if (!player || !Object.keys(player).length) {
-        return console.log('no player to add')
+        logger.log ({
+            level:'warn',
+            message:'no player to add'
+        })
+        return 
     }
     const index = idlePlayers.findIndex((listedUser) => player.user._id === listedUser.user._id)
     if (index !== -1) {
         return player
     } else {
-        console.log('adding user to list')
+        logger.log ({
+            level:'info',
+            message:`adding ${player.user.userName} to idle players`
+        })
         idlePlayers.push(player)
     }
     return player
@@ -35,13 +44,11 @@ const isIdInRoom = (socket) => {
 const removePlayerBySockID = (socket) => {
     var index = busyPlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
-        console.log('removing from busy')
         return busyPlayers.splice(index, 1)[0]
     }
     
     index = idlePlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
-        console.log('removing from idle')
         return idlePlayers.splice(index, 1)[0]
     }
 }
@@ -49,26 +56,28 @@ const removePlayerBySockID = (socket) => {
 const movePlayerFromIdleToBusy = (socket) => {
     let index = idlePlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
-        console.log('removing from idle')
         const player = getIdlePlayerBySockID(socket)
         idlePlayers.splice(index, 1)[0]
-        console.log('adding to busy')
         busyPlayers.push(player)
     } else {
-        console.log('player not found')
+        logger.log ({
+            level:'warn',
+            message:'movePlayerFromIdleToBusy did not find player to move'
+        })
     }
 }
 
 const movePlayerFromBusyToIdle = (socket) => {
     let index = busyPlayers.findIndex((player) => player.socketID === socket)
     if (index !== -1) {
-        console.log('removing from busy')
         const player = getIdlePlayerBySockID(socket)
         busyPlayers.splice(index, 1)[0]
-        console.log('adding to idle')
         idlePlayers.push(player)
     } else {
-        console.log('player not found')
+        logger.log ({
+            level:'warn',
+            message:'movePlayerFromBusyToIdle did not find player to move'
+        })
     }
 }
 const isLoggedIn = (userName) => {

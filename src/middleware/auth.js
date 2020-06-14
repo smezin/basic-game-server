@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const {logger} = require('../middleware/winstonLogger')
 
 const auth = async (req, res, next) => {
-    console.log(req.body.token)
     try { //break code to repository and service!!!!!
 
         const token = req.body.token
@@ -10,12 +10,14 @@ const auth = async (req, res, next) => {
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
         if (!user) {
-            console.log('failed to find user')
+            logger.log ({
+                level:"error",
+                message:`failed to find user to authenticate`
+            })
             throw new Error()
         }
         req.user = user
         req.token = token
-        console.log('authenticated')
         next()
     } catch (e) {
         res.status(401).send({ error: 'Authentication failure' })
