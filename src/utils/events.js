@@ -3,7 +3,7 @@ const winston = require('../middleware/winstonLogger')
 const logger = winston.logger
 
 const gameAccepted = (opponent, socket, io) => {
-    let me = players.getIdlePlayerBySockID(socket.id)
+    let me = players.getIdlePlayerBySocket(socket)
     players.movePlayerFromIdleToBusy(opponent.socketID)
     players.movePlayerFromIdleToBusy(socket.id)
     io.to(opponent.socketID).emit('startingGame', me)
@@ -27,7 +27,7 @@ const getIdlePlayers = (player, io) => {
     io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
 }
 const disconnect = (socket, io) => {
-    const leavingPlayer = players.removePlayerBySockID(socket.id)
+    const leavingPlayer = players.removePlayerBySocket(socket)
     if (leavingPlayer) {
         logger.log({
             level: 'info',
@@ -38,11 +38,11 @@ const disconnect = (socket, io) => {
     }
 }
 const offerGame = (opponent, socket, io) => {
-    let me = players.getIdlePlayerBySockID(socket.id)
+    let me = players.getIdlePlayerBySocket(socket)
     io.to(opponent.socketID).emit('letsPlay', me)
 }
 const gameDeclined = (opponent, socket, io) => {
-    let me = players.getIdlePlayerBySockID(socket.id)
+    let me = players.getIdlePlayerBySocket(socket)
     io.to(opponent.socketID).emit('noGame', me)
 }
 const boardData = (opponent, board, io) => {

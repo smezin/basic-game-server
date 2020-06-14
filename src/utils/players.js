@@ -1,6 +1,6 @@
-//change arrys to maps
-const idlePlayers = []
-const busyPlayers = []
+
+let idlePlayersMap = new Map
+let busyPlayersMap = new Map
 //
 const {logger} = require('../middleware/winstonLogger')
 
@@ -12,53 +12,52 @@ const addPlayer = (player) => {
         })
         return 
     }
-    const index = idlePlayers.findIndex((listedUser) => player.user._id === listedUser.user._id)
-    if (index !== -1) {
+    if (idlePlayersMap.has(player.socketID)) {
         return player
     } else {
         logger.log ({
             level:'info',
             message:`adding ${player.user.userName} to idle players`
         })
-        idlePlayers.push(player)
+        idlePlayersMap.set(player.socketID, player)
     }
     return player
 }
 
 const getIdlePlayers = () => {
-    return idlePlayers
+    return Array.from(idlePlayersMap.values())
 }
 
-const getIdlePlayerBySockID = (socket) => {
-    return idlePlayers.find((player) => player.socketID === socket)
+const getIdlePlayerBySocket = (socket) => {
+    return idlePlayersMap.get(socket.id)
 }
 
 const isIdInRoom = (socket) => {
-    let index = idlePlayers.findIndex((player) => player.socketID === socket)
-    if (index === -1) {
-        return false
+    if (idlePlayersMap.get(socket.id)) {
+        return true
     }
-    return true
+    return false
 }
 
-const removePlayerBySockID = (socket) => {
-    var index = busyPlayers.findIndex((player) => player.socketID === socket)
-    if (index !== -1) {
-        return busyPlayers.splice(index, 1)[0]
+const removePlayerBySocket = (socket) => {
+    if (idlePlayersMap.has(socket.id)) {
+        let player = idlePlayersMap.get(socket.id)
+        idlePlayersMap.delete(socket.id)
+        return player
     }
-    
-    index = idlePlayers.findIndex((player) => player.socketID === socket)
-    if (index !== -1) {
-        return idlePlayers.splice(index, 1)[0]
+    if (busyPlayersMap.has(socket.id)) {
+        let player = busyPlayersMap.get(socket.id)
+        busyPlayersMap.delete(socket.id)
+        return player
     }
 }
 
-const movePlayerFromIdleToBusy = (socket) => {
-    let index = idlePlayers.findIndex((player) => player.socketID === socket)
-    if (index !== -1) {
-        const player = getIdlePlayerBySockID(socket)
-        idlePlayers.splice(index, 1)[0]
-        busyPlayers.push(player)
+const movePlayerFromIdleToBusy = (socketID) => {
+
+    let player = idlePlayersMap.get(socketID)
+    if (player) {
+        busyPlayersMap.set(socketID, player)
+        idlePlayersMap.delete(socketID)
     } else {
         logger.log ({
             level:'warn',
@@ -67,12 +66,12 @@ const movePlayerFromIdleToBusy = (socket) => {
     }
 }
 
-const movePlayerFromBusyToIdle = (socket) => {
-    let index = busyPlayers.findIndex((player) => player.socketID === socket)
-    if (index !== -1) {
-        const player = getIdlePlayerBySockID(socket)
-        busyPlayers.splice(index, 1)[0]
-        idlePlayers.push(player)
+const movePlayerFromBusyToIdle = (socketID) => {
+
+    let player = busyPlayersMap.get(socketID)
+    if (player) {
+        idlePlayersMap.set(socketID, player)
+        busyPlayersMap.delete(socketID)
     } else {
         logger.log ({
             level:'warn',
@@ -80,25 +79,13 @@ const movePlayerFromBusyToIdle = (socket) => {
         })
     }
 }
-const isLoggedIn = (userName) => {
-    var index = idlePlayers.findIndex((player) => player.user.userName.localeCompare(userName) === 0)
-    if (index !== -1) {
-        return true
-    }
-    index = busyPlayers.findIndex((player) => player.user.userName.localeCompare(userName) === 0)
-    if (index !== -1) {
-        return true
-    }
-    return false
-}
 
 module.exports = {
     addPlayer,
-    removePlayerBySockID,
-    getIdlePlayerBySockID,
+    removePlayerBySocket,
+    getIdlePlayerBySocket,
     getIdlePlayers,
     movePlayerFromIdleToBusy,
     movePlayerFromBusyToIdle,
     isIdInRoom,
-    isLoggedIn  
 }
