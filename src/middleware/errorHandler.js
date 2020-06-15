@@ -9,13 +9,11 @@ class ErrorHandler extends Error {
   }
   const handleError = (err, res) => {
     const { statusCode, message } = err
-    console.log('\n\nfrom hanleError:', message, statusCode)
     logger.log({
         level:'error',
-        message
+        message:`statusCode:${statusCode} description: ${message}`
     })
     if (res) {
-      console.log('-----response-----', statusCode)
       res.status(statusCode).json({
         status: 'error',
         statusCode,

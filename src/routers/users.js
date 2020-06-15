@@ -2,7 +2,7 @@ const express = require('express')
 require('../db/mongoose')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
-const { handleError, ErrorHandler } = require('../middleware/errorHandler')
+const {ErrorHandler} = require('../middleware/errorHandler')
 const {logger} = require('../winstonLogger')
 
 const router = new express.Router()
@@ -75,6 +75,7 @@ router.post('/users/logout', auth, async (req, res, next) => {
         next(error)
     }
 })
+//remove before flight
 router.get('/error', (req, res) => {
     throw new ErrorHandler(500, 'Internal server error0000')
 })
