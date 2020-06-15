@@ -1,5 +1,5 @@
 const players = require('./players')
-const winston = require('../middleware/winstonLogger')
+const winston = require('../winstonLogger')
 const logger = winston.logger
 
 const gameAccepted = (opponent, socket, io) => {

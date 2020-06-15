@@ -2,7 +2,7 @@
 let idlePlayersMap = new Map
 let busyPlayersMap = new Map
 //
-const {logger} = require('../middleware/winstonLogger')
+const {logger} = require('../winstonLogger')
 
 const addPlayer = (player) => { 
     if (!player || !Object.keys(player).length) {

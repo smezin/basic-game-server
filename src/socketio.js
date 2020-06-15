@@ -1,7 +1,7 @@
 const events = require('./utils/events')
 const socketio = require('socket.io')
 const players = require('./utils/players')
-const {logger} = require('./middleware/winstonLogger')
+const {logger} = require('./winstonLogger')
 
 const initiateSocketio = (server) => {
     const io = socketio(server)
