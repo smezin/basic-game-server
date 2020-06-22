@@ -13,7 +13,7 @@ const addPlayer = (player) => {
         return 
     }
     if (idlePlayersMap.has(player.socketID)) {
-        return player
+        return player 
     } else {
         logger.log ({
             level:'info',

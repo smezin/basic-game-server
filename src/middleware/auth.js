@@ -13,14 +13,13 @@ const auth = async (req, res, next) => {
                 level:"error",
                 message:`failed to find user to authenticate`
             })
-            throw new Error(`failed to find user to authenticate`)
+            throw new ErrorHandler(401, `Authentication failure`)
         }
         req.user = user
         req.token = token
         next()
-    } catch (e) {
-        res.status(401).send({ error: 'Authentication failure' })
+    } catch (error) {
+        next(error)
     }
 }
-
 module.exports = auth

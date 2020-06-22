@@ -1,12 +1,15 @@
 const players = require('./players')
 const winston = require('../winstonLogger')
 const logger = winston.logger
+const allowMultipleGaming = true
 
-const gameAccepted = (opponent, socket, io) => {
+const gameAccepted = (opponent, gameID, socket, io) => {
     let me = players.getIdlePlayerBySocket(socket)
-    players.movePlayerFromIdleToBusy(opponent.socketID)
-    players.movePlayerFromIdleToBusy(socket.id)
-    io.to(opponent.socketID).emit('startingGame', me)
+    if (!allowMultipleGaming) {
+        players.movePlayerFromIdleToBusy(opponent.socketID)
+        players.movePlayerFromIdleToBusy(socket.id)
+    }
+    io.to(opponent.socketID).emit('startingGame', me, gameID)
 }
 const enterAsIdlePlayer = (player, socket, io) => {
     if (!Object.keys(player).length) {
@@ -26,7 +29,7 @@ const enterAsIdlePlayer = (player, socket, io) => {
 const getIdlePlayers = (player, io) => {
     io.to(player.socketID).emit('idlePlayers', players.getIdlePlayers())
 }
-const disconnect = (socket, io) => {
+const exitRoom = (socket, io) => {
     const leavingPlayer = players.removePlayerBySocket(socket)
     if (leavingPlayer) {
         logger.log({
@@ -45,21 +48,21 @@ const gameDeclined = (opponent, socket, io) => {
     let me = players.getIdlePlayerBySocket(socket)
     io.to(opponent.socketID).emit('noGame', me)
 }
-const boardData = (opponent, board, io) => {
-    io.to(opponent.socketID).emit('gameMove', board)
+const boardData = (opponent, gameID, board, io) => {
+    io.to(opponent.socketID).emit('gameMove', board, gameID)
 }
-const iLost = (opponent, io) => {
-    io.to(opponent.socketID).emit('youWon')
+const iLost = (opponent, gameID, io) => {
+    io.to(opponent.socketID).emit('youWon', gameID)
 }
-const iWon = (opponent, io) => {
-    io.to(opponent.socketID).emit('youLost')
+const iWon = (opponent, gameID, io) => {
+    io.to(opponent.socketID).emit('youLost', gameID)
 }
 
 module.exports = {
     gameAccepted,
     enterAsIdlePlayer,
     getIdlePlayers,
-    disconnect,
+    exitRoom,
     offerGame,
     gameDeclined,
     boardData,
