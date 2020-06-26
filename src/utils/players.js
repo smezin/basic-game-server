@@ -1,5 +1,5 @@
 
-let idlePlayersMap = new Map
+let idlePlayersMap = new Map //avoid usage of globals
 let busyPlayersMap = new Map
 //
 const {logger} = require('../winstonLogger')

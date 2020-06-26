@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const userRepo = require('../models/userRepo')
 const {logger} = require('../winstonLogger')
 
 const auth = async (req, res, next) => {
-    try { //break code to repository and service!!!!!
+    try { 
         const token = req.body.token
         const decoded = jwt.verify(token, process.env.BCRYPT_HASH)
-        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
+        const user = await userRepo.getUserForAuth(decoded, token)
 
         if (!user) {
             logger.log ({
